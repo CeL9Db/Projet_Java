@@ -25,5 +25,25 @@ public class Groupe extends Connexion{
                 this.list.remove(clt);
         }
     }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public String getNom() {
+        return this.nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public int getNombre() {
+        return this.nombre;
+    }
+
+    public void setNombre(int nombre) {
+        this.nombre = nombre;
+    }
     
 }
