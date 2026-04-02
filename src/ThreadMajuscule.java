@@ -14,14 +14,15 @@ public class ThreadMajuscule extends Thread{
     private Socket socket_u = null;	
 
     public ThreadMajuscule(Socket socket)throws IOException, UnknownHostException{
-        socket_u = socket; // socket du client
+        this.socket_u = socket; // socket du client
         //this.socket = new Socket(PORT);
+
     }
 
     public void run() {
 		try {
 			//this.socket = server.accept();
-			System.out.println("Serveur: connexion etablie avec le client " + socket_u.getInetAddress());
+			System.out.println("Serveur: connexion etablie avec le client " + this.socket_u.getInetAddress());
 			String msg;
 			do {
 				msg = readMessage();
@@ -31,8 +32,8 @@ public class ThreadMajuscule extends Thread{
 				}
 				
 			} while (!msg.equalsIgnoreCase("exit"));
-			System.out.println("connection rompue avec le client " + socket_u.getInetAddress());
-			socket_u.close();
+			System.out.println("connection rompue avec le client " + this.socket_u.getInetAddress());
+			this.socket_u.close();
 		} catch (IOException e) {
 			System.out.println("Erreur client");
 		}
@@ -46,7 +47,7 @@ public class ThreadMajuscule extends Thread{
         //MonoServerMajuscule(PORT);
         String li = null;
         try{
-        InputStream is = socket_u.getInputStream(); // création d'un flux d'entrée
+        InputStream is = this.socket_u.getInputStream(); // création d'un flux d'entrée
         InputStreamReader read = new InputStreamReader(is); // conversion du contenu octets -> carac (char)
         BufferedReader bufferRead = new BufferedReader(read); // lit ligne par ligne le flux
         li = bufferRead.readLine();
@@ -63,7 +64,7 @@ public class ThreadMajuscule extends Thread{
 	 */
 	public void sendMessage(String msg) {
 		try{
-        OutputStream out = socket_u.getOutputStream(); // création flux sortie
+        OutputStream out = this.socket_u.getOutputStream(); // création flux sortie
         OutputStreamWriter osWriter = new OutputStreamWriter(out); // conversion carac -> octet
         PrintWriter writer = new PrintWriter(osWriter); 
         writer.println(msg);

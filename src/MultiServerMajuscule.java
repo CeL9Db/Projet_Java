@@ -28,6 +28,7 @@ public class MultiServerMajuscule {
             ThreadMajuscule th = new ThreadMajuscule(this.socket);
             th.start();
 			System.out.println(th.getId());
+			 
 		
 	}}
 

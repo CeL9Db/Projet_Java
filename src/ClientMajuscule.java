@@ -14,17 +14,23 @@ import java.util.Scanner;
 
 
 public class ClientMajuscule {
-    private String msg;
+    private String nom;
+    private String msg; // message que l'utilisateur va envoyer
+    private String rep; // message que l'utilisateur va recevoir
     private Socket socket = null;
     
 
-    public ClientMajuscule() throws IOException{
+    public ClientMajuscule(String nom) throws IOException{
+        this.nom = nom;
         this.socket = new Socket("localhost", 10000);
         System.out.println(InetAddress.getLocalHost());
+        System.out.println(this.getNom() + " connecté");
         this.envoi();
     }
 
-
+    public String getNom(){
+        return this.nom;
+    }
     
     public String readMessage() {
         //MonoServerMajuscule(PORT);
@@ -62,19 +68,30 @@ public class ClientMajuscule {
             this.msg = sc.nextLine();
             sendMessage(this.msg);
             System.out.println("Message envoye"); 
-            String rep = readMessage();
-            if(rep != null)
-                System.out.println("Retour : " + rep + "\n");
+            this.rep = readMessage();
+            if(this.rep != null)
+                System.out.println("Retour : " + this.rep + "\n");
             }
-            while(!msg.equalsIgnoreCase("exit"));
+            while(!this.msg.equalsIgnoreCase("exit"));
         } catch (Exception e) {
             System.err.println("Erreur envoie du message : "+ e);
         }
         
     }
 
+    public void close_s() throws IOException{
+        System.out.println("Fermeture de la socket du client : " + this.socket.getInetAddress() + "...");
+        try {
+            this.socket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+    }
+
     public static void main(String args[])throws UnknownHostException, IOException {
-        ClientMajuscule clt = new ClientMajuscule();
+        ClientMajuscule clt = new ClientMajuscule("kagami");
+        
 }
 }
 
