@@ -25,11 +25,14 @@ public class ClientMajuscule {
         this.socket = new Socket("localhost", 10000);
         System.out.println(InetAddress.getLocalHost());
         System.out.println(this.getNom() + " connecté");
-        this.envoi();
+        
     }
 
     public String getNom(){
         return this.nom;
+    }
+    public void setNom(String nom){
+        this.nom = nom;
     }
     
     public String readMessage() {
@@ -49,7 +52,7 @@ public class ClientMajuscule {
 
     public void sendMessage(String msg1) {
 		try{
-        OutputStream out = socket.getOutputStream(); // création flux sortie
+        OutputStream out = this.socket.getOutputStream(); // création flux sortie
         OutputStreamWriter osWriter = new OutputStreamWriter(out); // conversion carac -> octet
         PrintWriter writer = new PrintWriter(osWriter); 
         writer.println(msg1);
@@ -59,19 +62,26 @@ public class ClientMajuscule {
             System.out.println("erreur ecriture");
         }
 	}
-
+    // Dans ClientMajuscule.java
+    public void lecture() {
+    // Thread de lecture (Anonyme)
+        new Thread(() -> {
+            while (true) {
+                String reponse = readMessage();
+                if (reponse != null) System.out.println("\n[Serveur] : " + reponse);
+            }
+        }).start(); 
+}
     public void envoi(){
         Scanner sc = new Scanner(System.in);
         try {
             do{
-            System.out.print("Veuillez saisir votre message : ");
-            this.msg = sc.nextLine();
-            sendMessage(this.msg);
-            System.out.println("Message envoye"); 
-            this.rep = readMessage();
-            if(this.rep != null)
-                System.out.println("Retour : " + this.rep + "\n");
+                System.out.print("Veuillez saisir votre message : ");
+                this.msg = sc.nextLine();
+                sendMessage(this.msg);
+                System.out.println("Message envoye");
             }
+            
             while(!this.msg.equalsIgnoreCase("exit"));
         } catch (Exception e) {
             System.err.println("Erreur envoie du message : "+ e);
@@ -89,8 +99,18 @@ public class ClientMajuscule {
         
     }
 
+    public void linkServer(){
+        this.lecture();
+        this.envoi();
+    }
+
     public static void main(String args[])throws UnknownHostException, IOException {
-        ClientMajuscule clt = new ClientMajuscule("kagami");
+        //Socket s = new Socket("localhost",10000);
+        System.out.println("Saisir votre nom : ");
+        Scanner sc = new Scanner(System.in);
+        String nom = sc.nextLine();
+        ClientMajuscule clt = new ClientMajuscule(nom);
+        clt.linkServer();
         
 }
 }

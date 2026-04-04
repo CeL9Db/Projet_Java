@@ -12,28 +12,38 @@ import java.net.UnknownHostException;
 public class ThreadMajuscule extends Thread{
     //private ServerSocket server;
     private Socket socket_u = null;	
+	MultiServerMajuscule serv;
 
-    public ThreadMajuscule(Socket socket)throws IOException, UnknownHostException{
+    public ThreadMajuscule(Socket socket, MultiServerMajuscule ms)throws IOException, UnknownHostException{
         this.socket_u = socket; // socket du client
-        //this.socket = new Socket(PORT);
-
+        this.serv = ms;
+		//Thread 
     }
 
-    public void run() {
+
+    public void run() { // Main méthode pour accueillir un client via un thread
 		try {
 			//this.socket = server.accept();
 			System.out.println("Serveur: connexion etablie avec le client " + this.socket_u.getInetAddress());
 			String msg;
-			do {
-				msg = readMessage();
-				if(msg != null){
+			boolean t = true;
+			while(t) {
+				msg = readMessage(); // lecture message client 
+				if(msg != null || !msg.equalsIgnoreCase("exit")){
 					System.out.println("Message  : " + msg + "\n");
-					sendMessage(msg.toUpperCase()); // renvoie le message en maj
+					//sendMessage(msg); // renvoie le message 
+					this.broadcast(msg, true);
 				}
-				
-			} while (!msg.equalsIgnoreCase("exit"));
-			System.out.println("connection rompue avec le client " + this.socket_u.getInetAddress());
-			this.socket_u.close();
+				else{
+					t = false;
+				}
+			} 
+
+			if(t == false){
+				this.serv.clients.remove(this);
+				this.socket_u.close();
+			}
+				this.socket_u.close();
 		} catch (IOException e) {
 			System.out.println("Erreur client");
 		}
@@ -58,10 +68,7 @@ public class ThreadMajuscule extends Thread{
         return li;
 	}
 
-	/**
-	 * write a message to the socket
-	 * @param msg
-	 */
+	
 	public void sendMessage(String msg) {
 		try{
         OutputStream out = this.socket_u.getOutputStream(); // création flux sortie
@@ -74,4 +81,16 @@ public class ThreadMajuscule extends Thread{
             System.out.println("erreur ecriture");
         }
 	}
+
+		public void broadcast(String msg, boolean t){
+		for(ThreadMajuscule th : serv.clients){
+			if(this != th && t == true){
+				System.out.println("thread :" + th.getName() + "/" + th.getId() + " envoie un message...");
+				th.sendMessage(msg);
+			}
+			//if(this != th && t == false)
+				
+		}
+	}
+
 }

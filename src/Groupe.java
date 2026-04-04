@@ -9,7 +9,7 @@ public class Groupe extends Connexion{
 
 
     public Groupe(int id, String nom, int nombre){
-        this.list = new ArrayList<ClientMajuscule>(null);
+        this.list = new ArrayList<ClientMajuscule>();
         this.id = id;
         this.nom = nom;
         this.nombre = nombre;
