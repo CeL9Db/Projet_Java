@@ -1,30 +1,32 @@
 //package TP2;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetAddress;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
 
-public class ClientMajuscule {
+public class ClientMajuscule implements Serializable{
     private String nom;
     private String msg; // message que l'utilisateur va envoyer
     private String rep; // message que l'utilisateur va recevoir
-    private Socket socket = null;
+    private transient Socket socket = null;
+    private transient ObjectOutputStream oos;
+    private transient ObjectInputStream ois;
     
 
     public ClientMajuscule(String nom) throws IOException{
         this.nom = nom;
         this.socket = new Socket("localhost", 10000);
-        System.out.println(InetAddress.getLocalHost());
+        //System.out.println(InetAddress.getLocalHost());
         System.out.println(this.getNom() + " connecté");
+        this.oos = new ObjectOutputStream(this.socket.getOutputStream());
+        this.ois = new ObjectInputStream(this.socket.getInputStream());
+        this.oos.writeObject(this.nom);
+        oos.flush();
         
     }
 
@@ -34,42 +36,51 @@ public class ClientMajuscule {
     public void setNom(String nom){
         this.nom = nom;
     }
+
+    public String getMessage(){
+        return this.msg;
+    }
     
-    public String readMessage() {
-        //MonoServerMajuscule(PORT);
-        String l = null;
+    public String readMessage() throws ClassNotFoundException {
+        
         try{
-        InputStream is = socket.getInputStream(); // création d'un flux d'entrée
-        InputStreamReader read = new InputStreamReader(is); // conversion du contenu octets -> carac (char)
-        BufferedReader bufferRead = new BufferedReader(read); // lit ligne par ligne le flux
-        l = bufferRead.readLine();
+        return (String) ois.readObject(); // Méthode bloquante qui attend un objet
         }
-        catch(IOException e){
-            System.out.println("Erreur de lecture");
+        catch(IOException | ClassNotFoundException e){
+            return null;
         }
-        return l;
+        //return null;
 	}
 
-    public void sendMessage(String msg1) {
-		try{
-        OutputStream out = this.socket.getOutputStream(); // création flux sortie
-        OutputStreamWriter osWriter = new OutputStreamWriter(out); // conversion carac -> octet
-        PrintWriter writer = new PrintWriter(osWriter); 
-        writer.println(msg1);
-        writer.flush();
-        }
-        catch (IOException e){
-            System.out.println("erreur ecriture");
+    public void sendMessage(String ms) {
+		try {
+            //this.msg = ms;
+            oos.writeObject(ms);
+            oos.flush();
+            oos.reset();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 	}
     // Dans ClientMajuscule.java
-    public void lecture() {
+    public void lecture() throws ClassNotFoundException{
     // Thread de lecture (Anonyme)
+        //String reponse;
         new Thread(() -> {
-            while (true) {
-                String reponse = readMessage();
-                if (reponse != null) System.out.println("\n[Serveur] : " + reponse);
+                try {
+                    while (true) {
+                    this.rep = readMessage();
+                    if (this.rep == null) {
+                    System.out.println("Connexion fermée par le serveur");
+                    break;
             }
+                    System.out.println("\n[Serveur] : " + this.rep);
+                    }
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                
+            
         }).start(); 
 }
     public void envoi(){
@@ -99,12 +110,12 @@ public class ClientMajuscule {
         
     }
 
-    public void linkServer(){
+    public void linkServer() throws ClassNotFoundException{
         this.lecture();
         this.envoi();
     }
 
-    public static void main(String args[])throws UnknownHostException, IOException {
+    public static void main(String args[])throws UnknownHostException, IOException, ClassNotFoundException {
         //Socket s = new Socket("localhost",10000);
         System.out.println("Saisir votre nom : ");
         Scanner sc = new Scanner(System.in);

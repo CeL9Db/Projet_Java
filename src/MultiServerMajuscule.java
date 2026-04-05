@@ -1,16 +1,17 @@
 import base_donnee.Connexion;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class MultiServerMajuscule{
+public class MultiServerMajuscule implements Serializable{
 	private ServerSocket server = null;
 	private Socket socket = null;
 	private String msg;
 	// Les groupes disponibles
 	ArrayList<ThreadMajuscule> clients = new ArrayList<>();
-	ArrayList<ClientMajuscule> liste_client = new ArrayList<>();
+	//ArrayList<ClientMajuscule> liste_client = new ArrayList<>();
 
 	// Connexion à la base de données
 	Connexion co;
@@ -33,28 +34,10 @@ public class MultiServerMajuscule{
 
 
 	public void ecoute()throws IOException {
-		/*boolean t = true;
-		if(t){
-			System.out.println("Voulez-vous creer un groupe Oui/Non : ");
-			Scanner sc = new Scanner(System.in);
-			String m = sc.nextLine();
-			if(sc.equals("oui")){
-				System.out.println("numero : ");
-				int n1 = sc.nextInt();
-				System.out.println("nombre de personnes : ");
-				int n2 = sc.nextInt();
-				gp = createGroupe(n1, m, n2);
-				System.out.println("groupe numero " + gp.getId() + " a été créé");
-			
-			}
-		}*/
-		while (true) {
-			 
+		while (true) { 
 			this.socket = server.accept();
             ThreadMajuscule th = new ThreadMajuscule(this.socket, this);
 			//this.liste_client.add(cl);
-			this.clients.add(th); // ajout du thread client dans la liste
-
             th.start();
 			
 			//System.out.println(th.getId());
@@ -80,12 +63,12 @@ public class MultiServerMajuscule{
 		MultiServerMajuscule serv = new MultiServerMajuscule(num);
 		//serv.groupe1.list.clear();
 		serv.ecoute();
-		System.out.println("Serveur en attente d'une reponse");
-		for (ClientMajuscule e : serv.liste_client) {
-			if(e.getNom() != null){
-				System.out.println("Bienvenue : " + e.getNom());
-			}
-		}
+		//System.out.println("Serveur en attente d'une reponse");
+		//for (ClientMajuscule e : serv.liste_client) {
+		//	if(e.getNom() != null){
+		//		System.out.println("Bienvenue : " + e.getNom());
+		//	}
+		//}
 	}
 
 }
