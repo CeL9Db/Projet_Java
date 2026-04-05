@@ -1,12 +1,12 @@
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 
 
-
 public class Interface_Inscription extends JFrame{
-    final static int Largeur = 400;
+    final static int Largeur = 450;
 	final static int Hauteur = 350;
 
 
@@ -77,9 +77,8 @@ public class Interface_Inscription extends JFrame{
         gbc_center.gridy = 2;
         PanelCenter.add(pwdCJTF,gbc_center);
 
-        JLabel ErrorLabel = new JLabel();
-        ErrorLabel.setText("Erreur d'inscription");//Prévu pour définir une erreur A modifier
-        ErrorLabel.setVisible(true);//Mettre a False quand on aura une gestion des boutons
+        JLabel ErrorLabel = new JLabel();//Lors d'erreur d'inscription
+        ErrorLabel.setVisible(false);
         ErrorLabel.setForeground(Color.red);
         gbc_center.gridx = 1;
         gbc_center.gridy = 3;
@@ -116,16 +115,36 @@ public class Interface_Inscription extends JFrame{
         gbc_south.insets = new Insets(0,70,10, 10);
         gbc_south.gridx = 1; 
         gbc_south.gridy = 1;
+        /*Verif username existe pas bdd
+        */
         BInscription.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e ){
                 String NewUsername = loginJTF.getText();
                 String mdp1 = pwdJTF.getText();
-                String mdp2 = pwdJTF.getText();
-                if(mdp1 == mdp2){
-                    String rq = "SELECT ";
-                    if(true){
-                    //Connexion.query_select("");
+                String mdp2 = pwdCJTF.getText();
+                System.out.println(mdp1 +" "+ mdp2);
+                if(mdp1.equals(mdp2)){
+                    String rq = "SELECT nom FROM utilisateur WHERE nom ='"+ NewUsername + "';"; 
+                    System.out.println(rq);
+                    Connexion rqUsername = new Connexion();
+                    try {
+                        rqUsername.query_select(rq);
+                        if(!rqUsername.rs.next()){
+                                String rq_maj = "INSERT INTO utilisateur(nom,mdp) VALUES('"+NewUsername+"', '"+mdp1+"');";
+                                System.out.println(rq_maj);
+                                rqUsername.query_maj(rq_maj);
+                                new Interface_Connexion();
+                                setVisible(false);
+                            }else{
+                                ErrorLabel.setText("Le nom d'utilisateur existe déjà");
+                                ErrorLabel.setVisible(true);
+                        }
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
                     }
+                }else{
+                    ErrorLabel.setText("Le mot de passe confirmé n'est pas le bon");
+                    ErrorLabel.setVisible(true);
                 }
             }
         });

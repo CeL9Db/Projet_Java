@@ -1,10 +1,11 @@
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 
 public class Interface_Connexion extends JFrame{
-    final static int Largeur = 400;
+    final static int Largeur = 450;
 	final static int Hauteur = 350;
 
     public Interface_Connexion(){
@@ -63,9 +64,8 @@ public class Interface_Connexion extends JFrame{
         PanelCenter.add(pwdJTF,gbc_center);
 
 
-        JLabel ErrorLabel = new JLabel();
-        ErrorLabel.setText("Erreur de connexion");//Prévu pour définir une erreur A modifier
-        ErrorLabel.setVisible(true);//Mettre a False quand on aura une gestion des boutons
+        JLabel ErrorLabel = new JLabel(); //champ prévu en cas d'erreur lors de la connexion
+        ErrorLabel.setVisible(false);
         ErrorLabel.setForeground(Color.red);
         gbc_center.gridx = 1;
         gbc_center.gridy = 2;
@@ -104,6 +104,30 @@ public class Interface_Connexion extends JFrame{
         gbc_south.insets = new Insets(0,70,10, 10);
         gbc_south.gridx = 1;
         gbc_south.gridy = 1;
+        BConnect.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                String username = loginJTF.getText();
+                String mdp = pwdJTF.getText();
+                String rq = "SELECT nom,mdp FROM utilisateur WHERE nom = '"+ username +"' AND mdp ='"+mdp+"'; ";
+                Connexion rqUsername = new Connexion();
+                try {
+                    rqUsername.query_select(rq);
+                    if(rqUsername.rs.next()){
+                        new Interface_Messagerie(username,mdp);
+                        String UpdateStatut = "UPDATE utilisateur SET statut = 1 WHERE nom ='"+username+"';";
+                        rqUsername.query_maj(UpdateStatut);
+                        setVisible(false);
+                    }else{
+                        ErrorLabel.setText("Mauvais nom d'utilisateur ou mot de passe");
+                        ErrorLabel.setVisible(true);
+                    }
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+                
+            }
+        });
+        //Penser a update le statut de l'utilisateur a la connexion
         PanelSouth.add(BConnect,gbc_south);
 
 
