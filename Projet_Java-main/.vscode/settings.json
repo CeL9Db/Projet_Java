@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
     "java.project.sourcePaths": ["src"],
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
@@ -7,10 +6,3 @@
         "c:\\Users\\mathi\\Downloads\\mysql-connector-j-9.6.0\\mysql-connector-j-9.6.0\\mysql-connector-j-9.6.0.jar"
     ]
 }
-=======
-    "java.project.referencedLibraries": [
-        "lib/**/*.jar",
-        "c:\\Users\\mathi\\Downloads\\TP11\\lib\\mysql-connector-j-9.1.0.jar"
-    ]
-}
->>>>>>> ddb8de9 (Modif -> connexion bd et connexion/inscription messagerie OK)
