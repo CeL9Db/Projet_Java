@@ -1,16 +1,21 @@
+import base_donnee.Connexion;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.sql.SQLException;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.*;
 
 
 public class Interface_Inscription extends JFrame{
     final static int Largeur = 450;
 	final static int Hauteur = 350;
+    ResultSet req;
 
 
     public Interface_Inscription(){
+        // init connexion
+        Connexion rqUsername = new Connexion();
        //création interface
         Panel pane = new Panel();
         pane.setLayout(new BorderLayout());
@@ -119,6 +124,7 @@ public class Interface_Inscription extends JFrame{
         */
         BInscription.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e ){
+                int k = 1;
                 String NewUsername = loginJTF.getText();
                 String mdp1 = pwdJTF.getText();
                 String mdp2 = pwdCJTF.getText();
@@ -126,11 +132,11 @@ public class Interface_Inscription extends JFrame{
                 if(mdp1.equals(mdp2)){
                     String rq = "SELECT nom FROM utilisateur WHERE nom ='"+ NewUsername + "';"; 
                     System.out.println(rq);
-                    Connexion rqUsername = new Connexion();
+                    
                     try {
                         rqUsername.query_select(rq);
-                        if(!rqUsername.rs.next()){
-                                String rq_maj = "INSERT INTO utilisateur(nom,mdp) VALUES('"+NewUsername+"', '"+mdp1+"');";
+                        if(!rqUsername.getSelect().next()){
+                                String rq_maj = "INSERT INTO utilisateur VALUES("+k+", '"+NewUsername+"', '"+mdp1+"', 1);"; // le 1 veut dire connecté
                                 System.out.println(rq_maj);
                                 rqUsername.query_maj(rq_maj);
                                 new Interface_Connexion();
@@ -139,6 +145,7 @@ public class Interface_Inscription extends JFrame{
                                 ErrorLabel.setText("Le nom d'utilisateur existe déjà");
                                 ErrorLabel.setVisible(true);
                         }
+                        k++;
                     } catch (SQLException e1) {
                         e1.printStackTrace();
                     }
