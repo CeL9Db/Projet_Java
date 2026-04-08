@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class MultiServerMajuscule implements Serializable{
@@ -33,7 +35,7 @@ public class MultiServerMajuscule implements Serializable{
 	}
 
 
-	public void ecoute()throws IOException {
+	public void ecoute()throws IOException, UnknownHostException, SQLException {
 		while (true) { 
 			this.socket = server.accept();
             ThreadMajuscule th = new ThreadMajuscule(this.socket, this);
@@ -58,7 +60,7 @@ public class MultiServerMajuscule implements Serializable{
 		return groupe;
 	} 
 
-	public static void main(String args[])throws IOException {
+	public static void main(String args[])throws IOException, UnknownHostException, SQLException {
 		int num = 10000;
 		MultiServerMajuscule serv = new MultiServerMajuscule(num);
 		//serv.groupe1.list.clear();

@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 
@@ -16,15 +17,16 @@ public class ClientMajuscule implements Serializable{
     private transient Socket socket = null;
     private transient ObjectOutputStream oos;
     private transient ObjectInputStream ois;
-    
+    Interface_Messagerie messagerie;
 
-    public ClientMajuscule(String nom) throws IOException{
+    public ClientMajuscule(String nom) throws IOException, SQLException{
         this.nom = nom;
         this.socket = new Socket("localhost", 10000);
         //System.out.println(InetAddress.getLocalHost());
         System.out.println(this.getNom() + " connecté");
         this.oos = new ObjectOutputStream(this.socket.getOutputStream());
         this.ois = new ObjectInputStream(this.socket.getInputStream());
+        messagerie = new Interface_Messagerie(nom);
         this.oos.writeObject(this.nom);
         oos.flush();
         
@@ -69,7 +71,7 @@ public class ClientMajuscule implements Serializable{
         new Thread(() -> {
                 try {
                     while (true) {
-                    this.rep = readMessage();
+                    this.rep = readMessage(); // message reçu de l'interface
                     if (this.rep == null) {
                     System.out.println("Connexion fermée par le serveur");
                     break;
@@ -90,6 +92,7 @@ public class ClientMajuscule implements Serializable{
                 System.out.print("Veuillez saisir votre message : ");
                 this.msg = sc.nextLine();
                 sendMessage(this.msg);
+
                 System.out.println("Message envoye");
             }
             
@@ -112,16 +115,17 @@ public class ClientMajuscule implements Serializable{
 
     public void linkServer() throws ClassNotFoundException{
         this.lecture();
-        this.envoi();
+        //this.envoi();
     }
 
-    public static void main(String args[])throws UnknownHostException, IOException, ClassNotFoundException {
+    public static void main(String args[])throws UnknownHostException, IOException, ClassNotFoundException, SQLException {
         //Socket s = new Socket("localhost",10000);
         System.out.println("Saisir votre nom : ");
         Scanner sc = new Scanner(System.in);
         String nom = sc.nextLine();
         ClientMajuscule clt = new ClientMajuscule(nom);
         clt.linkServer();
+        new Interface_Connexion();
         
 }
 }

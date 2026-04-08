@@ -4,6 +4,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 
@@ -13,12 +14,14 @@ public class ThreadMajuscule extends Thread implements Serializable{
 	MultiServerMajuscule serv;
 	private transient ObjectOutputStream oos;
 	private transient  ObjectInputStream ois;
+	Interface_Messagerie int_mess;
 
-    public ThreadMajuscule(Socket socket, MultiServerMajuscule ms)throws IOException, UnknownHostException{
+    public ThreadMajuscule(Socket socket, MultiServerMajuscule ms)throws IOException, UnknownHostException, SQLException{
         this.socket_u = socket; // socket du client
         this.serv = ms;
 		this.oos = new ObjectOutputStream(socket.getOutputStream());
 		this.ois = new ObjectInputStream(socket.getInputStream());
+		this.int_mess = new Interface_Messagerie(this.getName());
 		//Thread 
     }
 
@@ -103,8 +106,9 @@ public class ThreadMajuscule extends Thread implements Serializable{
 		public void broadcastPrivate(String msg, String nom){
 		for(ThreadMajuscule th : serv.clients){
 			if(th.getName().equals(nom)){ // thread name = client
+				String m = int_mess.reception_message(msg,nom);
 				//System.out.println("thread :" + th.getName() + "/" + th.getId() + " envoie un message...");
-				th.sendMessage(msg);
+				th.sendMessage(m);
 			}
 		}
 	}

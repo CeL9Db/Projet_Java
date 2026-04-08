@@ -65,7 +65,7 @@ public class Connexion{
 
     public static void main(String[] args) throws SQLException {
         Connexion c = new Connexion();
-        //c.query_maj("INSERT INTO utilisateur VALUES (1, 'mathieu', 'uzumaki', 1); ");
+        c.query_maj("INSERT INTO utilisateur VALUES (2, 'mathieu', 'uzumaki', 1); ");
 
     }
 }

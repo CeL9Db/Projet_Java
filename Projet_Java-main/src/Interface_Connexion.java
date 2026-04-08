@@ -10,6 +10,7 @@ public class Interface_Connexion extends JFrame{
 
     public Interface_Connexion(){
         //création interface
+        Connexion rqUsername = new Connexion();
         Panel pane = new Panel();
         pane.setLayout(new BorderLayout());
 
@@ -110,11 +111,11 @@ public class Interface_Connexion extends JFrame{
                 String username = loginJTF.getText();
                 String mdp = pwdJTF.getText();
                 String rq = "SELECT nom,mdp FROM utilisateur WHERE nom = '"+ username +"' AND mdp ='"+mdp+"'; ";
-                Connexion rqUsername = new Connexion();
+                //Connexion rqUsername = new Connexion();
                 try {
                     rqUsername.query_select(rq);
                     if(rqUsername.getSelect().next()){
-                        new Interface_Messagerie(username,mdp);
+                        new Interface_Messagerie(username);
                         String UpdateStatut = "UPDATE utilisateur SET statut = 1 WHERE nom ='"+username+"';";
                         rqUsername.query_maj(UpdateStatut);
                         setVisible(false);

@@ -18,12 +18,12 @@ public class Interface_Messagerie extends JFrame{
     protected  String mdp;
     JPanel chatPanel;
     Connexion c;
-    int i = 1;
+    int i = 1; // numero groupe
 
-    public Interface_Messagerie(String username, String mdp) throws SQLException{
+    public Interface_Messagerie(String username) throws SQLException{
         c = new Connexion();
         this.user = username;
-        this.mdp = mdp;
+        //this.mdp = mdp;
         //BorderLayout b1 = new BorderLayout();
         JPanel p1 = new JPanel(new BorderLayout(20,20)); // panel interface complète
         chatPanel = new JPanel(); // panel interface des messages
@@ -104,7 +104,7 @@ public class Interface_Messagerie extends JFrame{
         menu.add(statut);
         menu.add(add_groupe);
 
-
+        
         JLabel message = new JLabel("message :");
         JTextField text = new JTextField();
         JButton envoyer = new JButton("envoyer");
@@ -166,9 +166,17 @@ public void addMessage(String text, boolean isMe) {
     public void addGroupe(int id, String n){
         Groupe g = new Groupe(id, mdp, 10);
     }
+
+    public String reception_message(String message, String nom_user){ //nom user = nom du client à qui envoie le message
+        //affiche chez l'utilisateur le nouveau message
+        this.addMessage(message, false);
+        return message;
+    }
     public static void main(String[] args) throws SQLException {
 
-        new Interface_Messagerie(null, null);
+        //new Interface_Messagerie(null);
         
     }
+
+
 }

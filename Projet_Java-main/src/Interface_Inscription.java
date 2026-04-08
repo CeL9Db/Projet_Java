@@ -182,7 +182,6 @@ public class Interface_Inscription extends JFrame{
         
     }
     public static void main(String[] args) {
-
         new Interface_Inscription();
         
     }
