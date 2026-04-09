@@ -31,28 +31,26 @@ public class ThreadMajuscule extends Thread implements Serializable{
 			//this.socket = server.accept();
 			try{
 			System.out.println("Serveur: connexion etablie avec le client " + this.socket_u.getInetAddress());
-			String nom = readMessage(); // réception du client
+			String nom = (String) this.ois.readObject(); // réception du client
 			this.setName(nom);
+			System.out.println(nom);
+			//this.serv.add(this);
 
 			while(true) {
-				String s = readMessage(); //readMessage(); // Attend le message du Client A
+				String s = (String) this.ois.readObject(); //readMessage(); // Attend le message du Client A
 				if(s == null) break;
-				if(!s.equalsIgnoreCase("exit")){
-				System.out.println("Relais du message de " + nom + " : " + s);
-				// Option A : Envoyer à tout le monde (Chat public)
-				broadcastPrivate(null, s, nom);
 			
-			}
-				
-				// Option B : Si tu veux du privé, il faut que le client envoie 
-				// un format spécial (ex: "destinataire:message") pour que tu puisses 
-				// extraire le nom sans utiliser Scanner au clavier sur le serveur.
+				System.out.println("Relais du message de " + nom + " : " + s); // affichage console
+				// Option A : Envoyer à tout le monde (Chat public)
+				broadcastPublic(s);
 
 		}
 	}catch(ClassNotFoundException e){
 		e.printStackTrace();
 		//serv.removeClient(this);
-	}
+	} catch (IOException ex) {
+            System.getLogger(ThreadMajuscule.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
 			
 	}
 
@@ -93,8 +91,8 @@ public class ThreadMajuscule extends Thread implements Serializable{
         }
 	}
 
-		public void broadcastPrivate(ArrayList<ThreadMajuscule> a,String msg, String nom){
-		for(ThreadMajuscule th : a){
+		public void broadcastPrivate(String msg, String nom){
+		for(ThreadMajuscule th : this.serv){
 			if(th.getName().equals(nom)){ // thread name = client
 				//System.out.println("thread :" + th.getName() + "/" + th.getId() + " envoie un message...");
 				th.sendMessage(msg);
@@ -102,8 +100,8 @@ public class ThreadMajuscule extends Thread implements Serializable{
 		}
 	}
 
-	public void broadcastPublic(ArrayList<ThreadMajuscule> a,String msg){
-		for(ThreadMajuscule th : a){
+	public void broadcastPublic(String msg){
+		for(ThreadMajuscule th : this.serv){
 			if(this != th){
 				//System.out.println("thread :" + th.getName() + "/" + th.getId() + " envoie un message...");
 				th.sendMessage(msg);

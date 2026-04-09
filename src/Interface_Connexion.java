@@ -10,7 +10,7 @@ import javax.swing.*;
 public class Interface_Connexion extends JFrame{
     final static int Largeur = 450;
 	final static int Hauteur = 350;
-    Interface_test interface_mess;
+    Interface_Messagerie int_mess;
     
 
     public Interface_Connexion(){
@@ -120,7 +120,8 @@ public class Interface_Connexion extends JFrame{
                     rqUsername.query_select(rq);
                     if(rqUsername.rs.next()){
                         ClientMajuscule client = new ClientMajuscule(username);
-                        interface_mess = new Interface_test();
+                        int_mess = new Interface_Messagerie(username, client);
+                        int_mess.listen_reception_mess(); // réception des messages des utilisateur
                         
                         //new Interface_test();
                         //client.lecture();

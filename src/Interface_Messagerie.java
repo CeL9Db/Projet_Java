@@ -7,7 +7,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.*;
 
@@ -16,14 +15,21 @@ public class Interface_Messagerie extends JFrame{
     final static int Largeur = 600;
 	final static int Hauteur = 600;
     private String user;
-    protected  String mdp;
+    //protected  String mdp;
+    private String m = null;
     JPanel chatPanel;
     Connexion c;
     int i = 1;
     ClientMajuscule cl;
 
     public Interface_Messagerie(String username, ClientMajuscule cl) throws SQLException{
-        c = new Connexion();
+        try {
+            c = new Connexion();
+            System.out.println("Connecte a la bd");
+        } catch (Exception e) {
+        }
+        
+        
         this.user = username;
         this.cl = cl;
         //BorderLayout b1 = new BorderLayout();
@@ -39,14 +45,6 @@ public class Interface_Messagerie extends JFrame{
         // bouton pour ajouter des groupes et utilisateurs
         //JButton add_user = new JButton("Ajouter Utilisateur");
         JLabel statut = new JLabel();
-        ResultSet s = c.query_select("Select statut from utilisateur where nom ='" + this.user +"';");
-        int connected = 0;
-        if(s.next()){
-            connected = s.getInt("statut");
-        }
-        if(connected == 1)
-            statut.setText(this.user + " : connecté");
-
         
         
         JButton add_groupe = new JButton("Ajout Groupe");
@@ -130,13 +128,8 @@ public class Interface_Messagerie extends JFrame{
             }
         
         });
-        /*try {
-            String retour = cl.readMessage();
-            addMessage(retour, false);
-        } catch (ClassNotFoundException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }*/
+        
+         
         p3.add(message);
         p3.add(text);
         p3.add(envoyer);
@@ -155,11 +148,29 @@ public class Interface_Messagerie extends JFrame{
 		setResizable(false);
 		setSize(Largeur,Hauteur);
 		setVisible(true);
+
         
     }
-    // 1. Le conteneur principal qui contient tous les messages
-//JPanel chatPanel = new JPanel();
-//chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.PAGE_AXIS));
+    
+public void listen_reception_mess(){
+    new Thread(() -> {
+        try {
+            while (true) {
+                // On lit dans le thread secondaire (NE BLOQUE PAS L'UI)
+                final String m = this.cl.readMessage(); 
+                
+                if (m != null) {
+                    // On met à jour l'UI sur le thread graphique
+                    SwingUtilities.invokeLater(() -> {
+                        addMessage(m, false);
+                    });
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }).start();
+}
 
 // 2. Méthode pour ajouter une bulle
 public void addMessage(String text, boolean isMe) {
@@ -183,11 +194,13 @@ public void addMessage(String text, boolean isMe) {
 }
 
     public void addGroupe(int id, String n){
-        Groupe g = new Groupe(id, mdp, 10);
+        Groupe g = new Groupe(id, n, 10);
     }
     public static void main(String[] args) throws SQLException, IOException {
-        ClientMajuscule cl = new ClientMajuscule("kagami");
-        new Interface_Messagerie("kagami",cl);
+        //ClientMajuscule cl = new ClientMajuscule("midorima");
+        //ClientMajuscule cl2 = new ClientMajuscule("kagami");
+        //new Interface_Messagerie(cl.getNom(),cl).listen_reception_mess();;
+        //new Interface_Messagerie(cl2.getNom(),cl2).listen_reception_mess();
         
     }
 }
