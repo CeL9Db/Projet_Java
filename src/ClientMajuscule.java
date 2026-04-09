@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.Scanner;
 import javax.swing.SwingUtilities;
 
-
+// extends Interface_test
 public class ClientMajuscule implements Serializable{
     private String nom;
     private String msg; // message que l'utilisateur va envoyer
@@ -18,8 +18,8 @@ public class ClientMajuscule implements Serializable{
     private transient Socket socket = null;
     private transient ObjectOutputStream oos;
     private transient ObjectInputStream ois;
-    Interface_Messagerie mess;
-    ThreadMajuscule ths; // thread du server pour connecter le client et server
+    //Interface_Messagerie mess;
+    //ThreadMajuscule ths; // thread du server pour connecter le client et server
     
 
     public ClientMajuscule(String nom) throws IOException, SQLException{
@@ -32,7 +32,7 @@ public class ClientMajuscule implements Serializable{
         this.ois = new ObjectInputStream(this.socket.getInputStream());
         this.oos.writeObject(this.nom);
         oos.flush();
-        mess = new Interface_Messagerie(nom, this);
+        //mess = new Interface_Messagerie(nom, this);
         
     }
 
@@ -77,12 +77,19 @@ public class ClientMajuscule implements Serializable{
                 try {
                     while (true) {
                     this.rep = (String) this.ois.readObject();
-                    if (this.rep != null) {
+                    //if (this.rep != null) {
                     SwingUtilities.invokeLater(() -> {
-                        if(mess != null)
-                            mess.addMessage(this.rep, false); // false = message reçu des autres
+                        //if(this.rep != null)
+                            //this.rep.addMessage(this.rep, false); // false = message reçu des autres
+                        try {
+                            this.rep = (String) this.ois.readObject();
+                        } catch (ClassNotFoundException | IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                            
                     });
-            }
+            //}
                     //System.out.println("\n[Serveur] : " + this.rep);
                     }
                 } catch (Exception e) {

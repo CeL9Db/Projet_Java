@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+// extends ThreadMajuscule
+
 public class MultiServerMajuscule implements Serializable{
 	private ServerSocket server = null;
 	private Socket socket = null;
@@ -37,7 +39,7 @@ public class MultiServerMajuscule implements Serializable{
 	public void ecoute()throws IOException, SQLException {
 		while (true) { 
 			this.socket = server.accept();
-            ThreadMajuscule th = new ThreadMajuscule(this.socket, this);
+            ThreadMajuscule th = new ThreadMajuscule(this.socket, clients);
 			this.clients.add(th);
             th.start();
 			

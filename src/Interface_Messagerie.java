@@ -186,8 +186,8 @@ public void addMessage(String text, boolean isMe) {
         Groupe g = new Groupe(id, mdp, 10);
     }
     public static void main(String[] args) throws SQLException, IOException {
-        //ClientMajuscule cl = new ClientMajuscule("kagami");
-        //new Interface_Messagerie("kagami",cl);
+        ClientMajuscule cl = new ClientMajuscule("kagami");
+        new Interface_Messagerie("kagami",cl);
         
     }
 }

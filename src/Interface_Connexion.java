@@ -6,15 +6,18 @@ import java.io.IOException;
 import java.sql.SQLException;
 import javax.swing.*;
 
+
 public class Interface_Connexion extends JFrame{
     final static int Largeur = 450;
 	final static int Hauteur = 350;
+    Interface_test interface_mess;
+    
 
     public Interface_Connexion(){
         //création interface
         Panel pane = new Panel();
         pane.setLayout(new BorderLayout());
-
+        
         
         //affichage texte en haut de la fenetre
         JPanel PanelNorth = new JPanel(new GridBagLayout());
@@ -117,8 +120,10 @@ public class Interface_Connexion extends JFrame{
                     rqUsername.query_select(rq);
                     if(rqUsername.rs.next()){
                         ClientMajuscule client = new ClientMajuscule(username);
-                        new Interface_Messagerie(username, client);
-                        client.lecture();
+                        interface_mess = new Interface_test();
+                        
+                        //new Interface_test();
+                        //client.lecture();
                         
                         rqUsername.query_maj(UpdateStatut); // mis à jour du statut
                         setVisible(false);
@@ -126,7 +131,7 @@ public class Interface_Connexion extends JFrame{
                         ErrorLabel.setText("Mauvais nom d'utilisateur ou mot de passe");
                         ErrorLabel.setVisible(true);
                     }
-                } catch (SQLException | IOException | ClassNotFoundException e1) {
+                } catch (SQLException | IOException e1) {
                     e1.printStackTrace();
                 }
                 }

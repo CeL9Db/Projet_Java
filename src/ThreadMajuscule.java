@@ -5,20 +5,20 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 
 public class ThreadMajuscule extends Thread implements Serializable{
     //private ServerSocket server;
     private transient Socket socket_u = null;	
-	MultiServerMajuscule serv;
+	ArrayList<ThreadMajuscule> serv;
 	private transient ObjectOutputStream oos;
 	private transient  ObjectInputStream ois;
-	Interface_Messagerie mess;
 
-    public ThreadMajuscule(Socket socket, MultiServerMajuscule ms)throws IOException, UnknownHostException, SQLException{
+    public ThreadMajuscule(Socket socket, ArrayList<ThreadMajuscule> a)throws IOException, UnknownHostException, SQLException{
         this.socket_u = socket; // socket du client
-        this.serv = ms;
+        this.serv = a;
 		this.oos = new ObjectOutputStream(socket.getOutputStream());
 		this.ois = new ObjectInputStream(socket.getInputStream());
 		//this.oos.writeObject(this);
@@ -31,25 +31,27 @@ public class ThreadMajuscule extends Thread implements Serializable{
 			//this.socket = server.accept();
 			try{
 			System.out.println("Serveur: connexion etablie avec le client " + this.socket_u.getInetAddress());
-			String nom = (String) this.ois.readObject(); // réception du client
+			String nom = readMessage(); // réception du client
 			this.setName(nom);
 
 			while(true) {
-				String s = (String) this.ois.readObject(); //readMessage(); // Attend le message du Client A
+				String s = readMessage(); //readMessage(); // Attend le message du Client A
 				if(s == null) break;
 				if(!s.equalsIgnoreCase("exit")){
 				System.out.println("Relais du message de " + nom + " : " + s);
 				// Option A : Envoyer à tout le monde (Chat public)
-				broadcastPublic(s);}
+				broadcastPrivate(null, s, nom);
+			
+			}
 				
 				// Option B : Si tu veux du privé, il faut que le client envoie 
 				// un format spécial (ex: "destinataire:message") pour que tu puisses 
 				// extraire le nom sans utiliser Scanner au clavier sur le serveur.
 
 		}
-	}catch(ClassNotFoundException| IOException e){
+	}catch(ClassNotFoundException e){
 		e.printStackTrace();
-		serv.removeClient(this);
+		//serv.removeClient(this);
 	}
 			
 	}
@@ -91,8 +93,8 @@ public class ThreadMajuscule extends Thread implements Serializable{
         }
 	}
 
-		public void broadcastPrivate(String msg, String nom){
-		for(ThreadMajuscule th : serv.clients){
+		public void broadcastPrivate(ArrayList<ThreadMajuscule> a,String msg, String nom){
+		for(ThreadMajuscule th : a){
 			if(th.getName().equals(nom)){ // thread name = client
 				//System.out.println("thread :" + th.getName() + "/" + th.getId() + " envoie un message...");
 				th.sendMessage(msg);
@@ -100,8 +102,8 @@ public class ThreadMajuscule extends Thread implements Serializable{
 		}
 	}
 
-	public void broadcastPublic(String msg){
-		for(ThreadMajuscule th : serv.clients){
+	public void broadcastPublic(ArrayList<ThreadMajuscule> a,String msg){
+		for(ThreadMajuscule th : a){
 			if(this != th){
 				//System.out.println("thread :" + th.getName() + "/" + th.getId() + " envoie un message...");
 				th.sendMessage(msg);
