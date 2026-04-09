@@ -1,7 +1,9 @@
+import base_donnee.Connexion;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.sql.SQLException;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.sql.SQLException;
 import javax.swing.*;
 
 public class Interface_Connexion extends JFrame{
@@ -109,23 +111,25 @@ public class Interface_Connexion extends JFrame{
                 String username = loginJTF.getText();
                 String mdp = pwdJTF.getText();
                 String rq = "SELECT nom,mdp FROM utilisateur WHERE nom = '"+ username +"' AND mdp ='"+mdp+"'; ";
+                String UpdateStatut = "UPDATE utilisateur SET statut = 1 WHERE nom ='"+username+"';";
                 Connexion rqUsername = new Connexion();
                 try {
                     rqUsername.query_select(rq);
                     if(rqUsername.rs.next()){
-                        new Interface_Messagerie(username,mdp);
-                        String UpdateStatut = "UPDATE utilisateur SET statut = 1 WHERE nom ='"+username+"';";
-                        rqUsername.query_maj(UpdateStatut);
+                        ClientMajuscule client = new ClientMajuscule(username);
+                        new Interface_Messagerie(username, client);
+                        client.lecture();
+                        
+                        rqUsername.query_maj(UpdateStatut); // mis à jour du statut
                         setVisible(false);
                     }else{
                         ErrorLabel.setText("Mauvais nom d'utilisateur ou mot de passe");
                         ErrorLabel.setVisible(true);
                     }
-                } catch (SQLException e1) {
+                } catch (SQLException | IOException | ClassNotFoundException e1) {
                     e1.printStackTrace();
+                } 
                 }
-                
-            }
         });
         //Penser a update le statut de l'utilisateur a la connexion
         PanelSouth.add(BConnect,gbc_south);

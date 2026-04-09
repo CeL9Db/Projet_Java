@@ -6,7 +6,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.Scanner;
+import javax.swing.SwingUtilities;
 
 
 public class ClientMajuscule implements Serializable{
@@ -16,10 +18,13 @@ public class ClientMajuscule implements Serializable{
     private transient Socket socket = null;
     private transient ObjectOutputStream oos;
     private transient ObjectInputStream ois;
+    Interface_Messagerie mess;
+    ThreadMajuscule ths; // thread du server pour connecter le client et server
     
 
-    public ClientMajuscule(String nom) throws IOException{
+    public ClientMajuscule(String nom) throws IOException, SQLException{
         this.nom = nom;
+        //this.ths = th;
         this.socket = new Socket("localhost", 10000);
         //System.out.println(InetAddress.getLocalHost());
         System.out.println(this.getNom() + " connecté");
@@ -27,6 +32,7 @@ public class ClientMajuscule implements Serializable{
         this.ois = new ObjectInputStream(this.socket.getInputStream());
         this.oos.writeObject(this.nom);
         oos.flush();
+        mess = new Interface_Messagerie(nom, this);
         
     }
 
@@ -40,6 +46,7 @@ public class ClientMajuscule implements Serializable{
     public String getMessage(){
         return this.msg;
     }
+
     
     public String readMessage() throws ClassNotFoundException {
         
@@ -69,14 +76,16 @@ public class ClientMajuscule implements Serializable{
         new Thread(() -> {
                 try {
                     while (true) {
-                    this.rep = readMessage();
-                    if (this.rep == null) {
-                    System.out.println("Connexion fermée par le serveur");
-                    break;
+                    this.rep = (String) this.ois.readObject();
+                    if (this.rep != null) {
+                    SwingUtilities.invokeLater(() -> {
+                        if(mess != null)
+                            mess.addMessage(this.rep, false); // false = message reçu des autres
+                    });
             }
                     System.out.println("\n[Serveur] : " + this.rep);
                     }
-                } catch (ClassNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 
@@ -112,10 +121,10 @@ public class ClientMajuscule implements Serializable{
 
     public void linkServer() throws ClassNotFoundException{
         this.lecture();
-        this.envoi();
+        //this.envoi();
     }
 
-    public static void main(String args[])throws UnknownHostException, IOException, ClassNotFoundException {
+    public static void main(String args[])throws UnknownHostException, IOException, ClassNotFoundException, SQLException {
         //Socket s = new Socket("localhost",10000);
         System.out.println("Saisir votre nom : ");
         Scanner sc = new Scanner(System.in);

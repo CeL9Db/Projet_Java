@@ -4,6 +4,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 
@@ -13,54 +14,43 @@ public class ThreadMajuscule extends Thread implements Serializable{
 	MultiServerMajuscule serv;
 	private transient ObjectOutputStream oos;
 	private transient  ObjectInputStream ois;
+	Interface_Messagerie mess;
 
-    public ThreadMajuscule(Socket socket, MultiServerMajuscule ms)throws IOException, UnknownHostException{
+    public ThreadMajuscule(Socket socket, MultiServerMajuscule ms)throws IOException, UnknownHostException, SQLException{
         this.socket_u = socket; // socket du client
         this.serv = ms;
 		this.oos = new ObjectOutputStream(socket.getOutputStream());
 		this.ois = new ObjectInputStream(socket.getInputStream());
+		//this.oos.writeObject(this);
+		//mess = new Interface_Messagerie(null);
 		//Thread 
     }
 
 
     public void run() { // Main méthode pour accueillir un client via un thread
-		try {
 			//this.socket = server.accept();
+			try{
 			System.out.println("Serveur: connexion etablie avec le client " + this.socket_u.getInetAddress());
 			String nom = readMessage(); // réception du client
 			this.setName(nom);
-			if(nom != null){
-				serv.addClient(this); // On l'ajoute à la liste DU SERVEUR
-				System.out.println(nom + " est maintenant dans la liste.");
-			}
-			while(true) {
-				Message message = new Message(null); // message qui contiendra les enregistrements des messages
-				String s = readMessage(); // réception du client
-				if(s == null) break; // on arrete la boucle si c'est nulle
-				
-				//if(this.client == null) break;
-                //String msg1 = this.client.getMessage();
-				if(s != null && !s.equalsIgnoreCase("exit")){
-					message.setMessage(s);
-					System.out.println("Message reçu de " + nom + " : " + s + " à " + message.getDate() + "h");
-					System.out.println("Veuillez taper le nom du destinataire");
-					Scanner sc = new Scanner(System.in);
-					String name = sc.nextLine();
-					this.broadcastPrivate(s, name);
 
-				}
-				else{
-					break;
-				}
-			} 
-			this.socket_u.close();
-		} catch (IOException e) {
-			this.serv.clients.remove(this);
-			System.out.println("Erreur client");
-		} catch (ClassNotFoundException c) {
-			// TODO Auto-generated catch block
-			c.printStackTrace();
+			while(true) {
+				String s = readMessage(); // Attend le message du Client A
+				if(s == null) break;
+				if(!s.equalsIgnoreCase("exit")){
+				System.out.println("Relais du message de " + nom + " : " + s);
+				// Option A : Envoyer à tout le monde (Chat public)
+				broadcastPublic(s);}
+				
+				// Option B : Si tu veux du privé, il faut que le client envoie 
+				// un format spécial (ex: "destinataire:message") pour que tu puisses 
+				// extraire le nom sans utiliser Scanner au clavier sur le serveur.
+
 		}
+	}catch(ClassNotFoundException e){
+		e.printStackTrace();
+	}
+			
 	}
 
 	private Scanner nextLine() {

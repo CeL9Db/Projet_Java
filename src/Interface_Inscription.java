@@ -134,8 +134,8 @@ public class Interface_Inscription extends JFrame{
                     System.out.println(rq);
                     
                     try {
-                        rqUsername.query_select(rq);
-                        if(!rqUsername.getSelect().next()){
+                        ResultSet r = rqUsername.query_select(rq);
+                        if(r.next()){
                                 String rq_maj = "INSERT INTO utilisateur VALUES("+k+", '"+NewUsername+"', '"+mdp1+"', 1);"; // le 1 veut dire connecté
                                 System.out.println(rq_maj);
                                 rqUsername.query_maj(rq_maj);

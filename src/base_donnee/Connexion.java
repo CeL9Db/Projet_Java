@@ -7,8 +7,8 @@ import java.sql.Statement;
 
 public class Connexion{
     Connection connection = null;
-    Statement st; // variable statement pour rs
-    ResultSet rs; // variable requête
+    Statement st = null; // variable statement pour rs
+    public ResultSet rs; // variable requête
     
 
     public Connexion(){
@@ -19,6 +19,7 @@ public class Connexion{
             "db_admin",
             "db_admin");
             System.out.println("Connecté");
+            this.st = connection.createStatement(); // créer l'objet pour les requetes
             } 
             catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -41,7 +42,7 @@ public class Connexion{
     public ResultSet query_select(String req) throws SQLException{ // méthode pour récupérer les éléments des tables
         //String r;
         try{
-            this.st = connection.createStatement(); // créer l'objet pour les requetes
+            
             this.rs = st.executeQuery(req); //récupère le résultat de la requête 
         }
         catch(SQLException e){
@@ -53,7 +54,6 @@ public class Connexion{
     public void query_maj(String req) throws SQLException{ // méthode pour mettre à jour les éléments des tables
         //String r;
         try{
-            this.st = connection.createStatement(); // créer l'objet pour les requetes
             st.execute(req); //récupère le résultat de la requête 
         }
         catch(SQLException e){

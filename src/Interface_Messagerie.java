@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.*;
@@ -19,11 +20,12 @@ public class Interface_Messagerie extends JFrame{
     JPanel chatPanel;
     Connexion c;
     int i = 1;
+    ClientMajuscule cl;
 
-    public Interface_Messagerie(String username, String mdp) throws SQLException{
+    public Interface_Messagerie(String username, ClientMajuscule cl) throws SQLException{
         c = new Connexion();
         this.user = username;
-        this.mdp = mdp;
+        this.cl = cl;
         //BorderLayout b1 = new BorderLayout();
         JPanel p1 = new JPanel(new BorderLayout(20,20)); // panel interface complète
         chatPanel = new JPanel(); // panel interface des messages
@@ -112,12 +114,29 @@ public class Interface_Messagerie extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String message = text.getText(); 
-                addMessage(message, true);
-                text.setText(null);
+                if(!message.isEmpty()){
+                    addMessage(message, true); // on l'affiche de notre côté
+                    cl.sendMessage(message); // envoie au server
+                    try {
+                        c.query_maj("INSERT INTO message VALUES (null, null, null,'" +message +"', null");
+                    } catch (SQLException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+                    text.setText("");
+                }
+                
                 //throw new UnsupportedOperationException("Not supported yet.");
             }
         
         });
+        try {
+            String retour = cl.readMessage();
+            addMessage(retour, false);
+        } catch (ClassNotFoundException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
         p3.add(message);
         p3.add(text);
         p3.add(envoyer);
@@ -166,9 +185,9 @@ public void addMessage(String text, boolean isMe) {
     public void addGroupe(int id, String n){
         Groupe g = new Groupe(id, mdp, 10);
     }
-    public static void main(String[] args) throws SQLException {
-
-        new Interface_Messagerie(null, null);
+    public static void main(String[] args) throws SQLException, IOException {
+        ClientMajuscule cl = new ClientMajuscule("kagami");
+        new Interface_Messagerie("kagami",cl);
         
     }
 }

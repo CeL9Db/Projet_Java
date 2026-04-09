@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class MultiServerMajuscule implements Serializable{
@@ -33,11 +34,11 @@ public class MultiServerMajuscule implements Serializable{
 	}
 
 
-	public void ecoute()throws IOException {
+	public void ecoute()throws IOException, SQLException {
 		while (true) { 
 			this.socket = server.accept();
             ThreadMajuscule th = new ThreadMajuscule(this.socket, this);
-			//this.liste_client.add(cl);
+			this.clients.add(th);
             th.start();
 			
 			//System.out.println(th.getId());
@@ -58,10 +59,9 @@ public class MultiServerMajuscule implements Serializable{
 		return groupe;
 	} 
 
-	public static void main(String args[])throws IOException {
+	public static void main(String args[])throws IOException, SQLException {
 		int num = 10000;
 		MultiServerMajuscule serv = new MultiServerMajuscule(num);
-		//serv.groupe1.list.clear();
 		serv.ecoute();
 		//System.out.println("Serveur en attente d'une reponse");
 		//for (ClientMajuscule e : serv.liste_client) {
