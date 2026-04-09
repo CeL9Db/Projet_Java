@@ -128,7 +128,7 @@ public class Interface_Connexion extends JFrame{
                     }
                 } catch (SQLException | IOException | ClassNotFoundException e1) {
                     e1.printStackTrace();
-                } 
+                }
                 }
         });
         //Penser a update le statut de l'utilisateur a la connexion

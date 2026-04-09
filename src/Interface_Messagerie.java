@@ -130,13 +130,13 @@ public class Interface_Messagerie extends JFrame{
             }
         
         });
-        try {
+        /*try {
             String retour = cl.readMessage();
             addMessage(retour, false);
         } catch (ClassNotFoundException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
-        }
+        }*/
         p3.add(message);
         p3.add(text);
         p3.add(envoyer);
@@ -186,8 +186,8 @@ public void addMessage(String text, boolean isMe) {
         Groupe g = new Groupe(id, mdp, 10);
     }
     public static void main(String[] args) throws SQLException, IOException {
-        ClientMajuscule cl = new ClientMajuscule("kagami");
-        new Interface_Messagerie("kagami",cl);
+        //ClientMajuscule cl = new ClientMajuscule("kagami");
+        //new Interface_Messagerie("kagami",cl);
         
     }
 }

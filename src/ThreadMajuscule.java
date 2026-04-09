@@ -31,11 +31,11 @@ public class ThreadMajuscule extends Thread implements Serializable{
 			//this.socket = server.accept();
 			try{
 			System.out.println("Serveur: connexion etablie avec le client " + this.socket_u.getInetAddress());
-			String nom = readMessage(); // réception du client
+			String nom = (String) this.ois.readObject(); // réception du client
 			this.setName(nom);
 
 			while(true) {
-				String s = readMessage(); // Attend le message du Client A
+				String s = (String) this.ois.readObject(); //readMessage(); // Attend le message du Client A
 				if(s == null) break;
 				if(!s.equalsIgnoreCase("exit")){
 				System.out.println("Relais du message de " + nom + " : " + s);
@@ -47,8 +47,9 @@ public class ThreadMajuscule extends Thread implements Serializable{
 				// extraire le nom sans utiliser Scanner au clavier sur le serveur.
 
 		}
-	}catch(ClassNotFoundException e){
+	}catch(ClassNotFoundException| IOException e){
 		e.printStackTrace();
+		serv.removeClient(this);
 	}
 			
 	}

@@ -83,7 +83,7 @@ public class ClientMajuscule implements Serializable{
                             mess.addMessage(this.rep, false); // false = message reçu des autres
                     });
             }
-                    System.out.println("\n[Serveur] : " + this.rep);
+                    //System.out.println("\n[Serveur] : " + this.rep);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
