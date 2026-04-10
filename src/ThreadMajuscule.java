@@ -21,9 +21,6 @@ public class ThreadMajuscule extends Thread implements Serializable{
         this.serv = a;
 		this.oos = new ObjectOutputStream(socket.getOutputStream());
 		this.ois = new ObjectInputStream(socket.getInputStream());
-		//this.oos.writeObject(this);
-		//mess = new Interface_Messagerie(null);
-		//Thread 
     }
 
 
@@ -39,10 +36,22 @@ public class ThreadMajuscule extends Thread implements Serializable{
 			while(true) {
 				String s = (String) this.ois.readObject(); //readMessage(); // Attend le message du Client A
 				if(s == null) break;
-			
+				String[] message_d = s.split("/",2);
+				String texte;
+				if(message_d.length == 2){
+					String user = message_d[0];
+					texte = message_d[1];
+					broadcastPrivate(texte, user);
+				}
+				else{
+					texte= message_d[1];
+					broadcastPublic(texte);
+				}
 				System.out.println("Relais du message de " + nom + " : " + s); // affichage console
 				// Option A : Envoyer à tout le monde (Chat public)
-				broadcastPublic(s);
+				//broadcastPublic(s);
+				
+					//broadcastPublic(s);
 
 		}
 	}catch(ClassNotFoundException e){
@@ -90,23 +99,23 @@ public class ThreadMajuscule extends Thread implements Serializable{
             e.printStackTrace();
         }
 	}
-
 		public void broadcastPrivate(String msg, String nom){
 		for(ThreadMajuscule th : this.serv){
 			if(th.getName().equals(nom)){ // thread name = client
 				//System.out.println("thread :" + th.getName() + "/" + th.getId() + " envoie un message...");
 				th.sendMessage(msg);
+				return;
 			}
 		}
 	}
 
 	public void broadcastPublic(String msg){
-		for(ThreadMajuscule th : this.serv){
-			if(this != th){
-				//System.out.println("thread :" + th.getName() + "/" + th.getId() + " envoie un message...");
-				th.sendMessage(msg);
+			for(ThreadMajuscule th : this.serv){
+				if(this != th){
+					th.sendMessage(msg);
+				}
 			}
-		}
 	}
-
+	
 }
+

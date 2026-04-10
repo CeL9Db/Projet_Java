@@ -2,6 +2,8 @@ import base_donnee.Connexion;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import javax.swing.*;
@@ -10,7 +12,6 @@ import javax.swing.*;
 public class Interface_Connexion extends JFrame{
     final static int Largeur = 450;
 	final static int Hauteur = 350;
-    Interface_Messagerie int_mess;
     
 
     public Interface_Connexion(){
@@ -47,7 +48,7 @@ public class Interface_Connexion extends JFrame{
 
         //set login
         JLabel loginLabel = new JLabel("Username : ");
-        
+                
         gbc_center.gridx = 0;
         gbc_center.gridy = 0;
         PanelCenter.add(loginLabel,gbc_center);
@@ -113,19 +114,17 @@ public class Interface_Connexion extends JFrame{
             public void actionPerformed(ActionEvent e){
                 String username = loginJTF.getText();
                 String mdp = pwdJTF.getText();
+
                 String rq = "SELECT nom,mdp FROM utilisateur WHERE nom = '"+ username +"' AND mdp ='"+mdp+"'; ";
                 String UpdateStatut = "UPDATE utilisateur SET statut = 1 WHERE nom ='"+username+"';";
                 Connexion rqUsername = new Connexion();
+                
                 try {
                     rqUsername.query_select(rq);
                     if(rqUsername.rs.next()){
                         ClientMajuscule client = new ClientMajuscule(username);
-                        int_mess = new Interface_Messagerie(username, client);
-                        int_mess.listen_reception_mess(); // réception des messages des utilisateur
-                        
-                        //new Interface_test();
-                        //client.lecture();
-                        
+                        Interface_Messagerie int_m = new Interface_Messagerie(username,client);
+                        int_m.listen_reception_mess();
                         rqUsername.query_maj(UpdateStatut); // mis à jour du statut
                         setVisible(false);
                     }else{
@@ -160,7 +159,7 @@ public class Interface_Connexion extends JFrame{
             }
         });
 
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        addWindowListener(new ClosingAdapter());
 		setTitle("connexion");
 		setResizable(true);
 		setSize(Largeur,Hauteur);
@@ -168,7 +167,13 @@ public class Interface_Connexion extends JFrame{
         
         
     }
-
+    
+    public class ClosingAdapter extends WindowAdapter{
+        public void windowClosing(WindowEvent e){
+            JOptionPane.showConfirmDialog(e.getWindow(),"Vous allez quittez l'application", null, JOptionPane.OK_OPTION);
+                System.exit(0);
+            }
+    }
     public static void main(String[] args) {
 
         new Interface_Connexion();

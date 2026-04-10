@@ -123,8 +123,7 @@ public class Interface_Inscription extends JFrame{
         /*Verif username existe pas bdd
         */
         BInscription.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e ){
-                int k = 1;
+            public void actionPerformed(ActionEvent e){
                 String NewUsername = loginJTF.getText();
                 String mdp1 = pwdJTF.getText();
                 String mdp2 = pwdCJTF.getText();
@@ -132,20 +131,21 @@ public class Interface_Inscription extends JFrame{
                 if(mdp1.equals(mdp2)){
                     String rq = "SELECT nom FROM utilisateur WHERE nom ='"+ NewUsername + "';"; 
                     System.out.println(rq);
-                    
                     try {
                         ResultSet r = rqUsername.query_select(rq);
-                        if(r.next()){
-                                String rq_maj = "INSERT INTO utilisateur VALUES("+k+", '"+NewUsername+"', '"+mdp1+"', 1);"; // le 1 veut dire connecté
+                        if(!r.next()){
+                                String rq_maj = "INSERT INTO utilisateur(nom,mdp) VALUES('"+NewUsername+"', '"+mdp1+"');";
                                 System.out.println(rq_maj);
                                 rqUsername.query_maj(rq_maj);
+                                JOptionPane.showConfirmDialog(null,"Confirmation Connexion", "Vous êtes bien connecté", JOptionPane.OK_OPTION);
+
                                 new Interface_Connexion();
                                 setVisible(false);
                             }else{
                                 ErrorLabel.setText("Le nom d'utilisateur existe déjà");
                                 ErrorLabel.setVisible(true);
                         }
-                        k++;
+                        
                     } catch (SQLException e1) {
                         e1.printStackTrace();
                     }

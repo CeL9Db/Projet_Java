@@ -42,9 +42,9 @@ CREATE TABLE `groupe` (
 CREATE TABLE `message` (
   `id_message` int(11) NOT NULL,
   `id_sender` int(11) DEFAULT NULL,
-  `id_receiver` int(11) DEFAULT NULL,
   `id_grp` int(11) DEFAULT NULL,
-  `messagetxt` varchar(500) DEFAULT NULL
+  `messagetxt` varchar(500) DEFAULT NULL,
+  dateMess varchar(100) DEFAULT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

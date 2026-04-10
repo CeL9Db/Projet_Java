@@ -14,7 +14,6 @@ public class MultiServerMajuscule implements Serializable{
 	private String msg;
 	// Les groupes disponibles
 	ArrayList<ThreadMajuscule> clients = new ArrayList<>();
-	//ArrayList<ClientMajuscule> liste_client = new ArrayList<>();
 
 	// Connexion à la base de données
 	Connexion co;
@@ -25,7 +24,7 @@ public class MultiServerMajuscule implements Serializable{
 		try {
 			this.server = new ServerSocket(num);
 			co = new Connexion();
-			//this.co = new Connexion();
+			
 		} catch (IOException e) {
 			System.err.println("Server: " + e);
 			System.exit(1);
@@ -41,11 +40,7 @@ public class MultiServerMajuscule implements Serializable{
 			this.socket = server.accept();
             ThreadMajuscule th = new ThreadMajuscule(this.socket, clients);
 			this.clients.add(th);
-            th.start();
-			
-			//System.out.println(th.getId());
-			 
-		
+            th.start();	
 	}}
 
 	public void addClient(ThreadMajuscule e) throws IOException{
@@ -65,12 +60,7 @@ public class MultiServerMajuscule implements Serializable{
 		int num = 10000;
 		MultiServerMajuscule serv = new MultiServerMajuscule(num);
 		serv.ecoute();
-		//System.out.println("Serveur en attente d'une reponse");
-		//for (ClientMajuscule e : serv.liste_client) {
-		//	if(e.getNom() != null){
-		//		System.out.println("Bienvenue : " + e.getNom());
-		//	}
-		//}
+		
 	}
 
 }

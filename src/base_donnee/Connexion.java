@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 public class Connexion{
     Connection connection = null;
-    Statement st = null; // variable statement pour rs
+    public Statement st = null; // variable statement pour rs
     public ResultSet rs; // variable requête
     
 
@@ -54,7 +54,11 @@ public class Connexion{
     public void query_maj(String req) throws SQLException{ // méthode pour mettre à jour les éléments des tables
         //String r;
         try{
-            st.execute(req); //récupère le résultat de la requête 
+            if(st.execute(req)) //récupère le résultat de la requête 
+                System.out.println("Mise à jour effectuée");
+            else{
+                System.out.println("Mise à jour non effectuée !!!!");
+            }
         }
         catch(SQLException e){
             e.printStackTrace();
