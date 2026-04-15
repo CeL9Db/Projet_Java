@@ -8,7 +8,7 @@ RUN jar cfe projetJava.jar App *.class
 # Stage 2: Run
 FROM openjdk:27-ea-jdk
 WORKDIR /app
-COPY --from=builder /app/App.class /app
+COPY --from=builder /app/projetJava.jar /app
 
 EXPOSE 10000
 
