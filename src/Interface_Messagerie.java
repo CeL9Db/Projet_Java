@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,8 +13,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+
 
 
 public class Interface_Messagerie extends JFrame{
@@ -149,13 +149,17 @@ public class Interface_Messagerie extends JFrame{
         JPgroupes.add(PDSud,BorderLayout.SOUTH);
         
         
-        //Fonction qui ajoute un nouveau groupe a la base de donnée et a la liste des groupes
+        //Fonction qui ajoute un nouveau groupe a la base de données ainsi que dans l'interface et a la liste des groupes
         BajouteGrp.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 String grpName = JTFaddGrp.getText();
+                Groupe groupe = new Groupe(grpName , 10); // création d'un groupe avec la classe
                 List<String> ListSelec = JLUser4Grp.getSelectedValuesList();
-                String rqCreaGrp= "INSERT INTO groupe(nom_grp,nb_membre) VALUES ('"+ grpName +"',"+ListSelec.size()+");";
+                String rqCreaGrp= "INSERT INTO groupe(nom_grp,nb_membre) VALUES ('"+ groupe.getNom() +"',"+groupe.getNombre()+");";
+
+                // Ajouter un bouton ajout membre -> si un membre est sélectionné + bouton appuyé alors le membre est ajouté
+
                 
                 try {
                     if(ListSelec.contains(username)){
@@ -183,9 +187,8 @@ public class Interface_Messagerie extends JFrame{
                 }
                 
             }
-
+            
         });
-
         JBgroupes.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
@@ -298,13 +301,14 @@ public class Interface_Messagerie extends JFrame{
                         LabelStatut.setText("Vous êtes deconnecté");
                         DiscussActuel.setText("Discussion avec Personne");
                         LabelNomUser.setText("Vous êtes personne");
+                        cl.close_s(); // on ferme la socket du client
                     }else {
                         new Interface_Connexion();
                         setVisible(false);
 
                     }
 
-                } catch (SQLException e1) {
+                } catch (SQLException | IOException e1) {
                     
                     e1.printStackTrace();
                 }

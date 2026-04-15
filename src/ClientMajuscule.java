@@ -18,8 +18,6 @@ public class ClientMajuscule implements Serializable{
     private transient Socket socket = null;
     private transient ObjectOutputStream oos;
     private transient ObjectInputStream ois;
-    //Interface_Messagerie mess;
-    //ThreadMajuscule ths; // thread du server pour connecter le client et server
     
 
     public ClientMajuscule(String nom) throws IOException, SQLException{
@@ -32,7 +30,6 @@ public class ClientMajuscule implements Serializable{
         this.ois = new ObjectInputStream(this.socket.getInputStream());
         this.oos.writeObject(this.nom);
         oos.flush();
-        //mess = new Interface_Messagerie(nom, this);
         
     }
 
@@ -56,7 +53,6 @@ public class ClientMajuscule implements Serializable{
         catch(IOException | ClassNotFoundException e){
             return null;
         }
-        //return null;
 	}
 
     public void sendMessage(String ms) {
@@ -72,15 +68,11 @@ public class ClientMajuscule implements Serializable{
     // Dans ClientMajuscule.java
     public void lecture() throws ClassNotFoundException{
     // Thread de lecture (Anonyme)
-        //String reponse;
         new Thread(() -> {
                 try {
                     while (true) {
                     this.rep = (String) this.ois.readObject();
-                    //if (this.rep != null) {
                     SwingUtilities.invokeLater(() -> {
-                        //if(this.rep != null)
-                            //this.rep.addMessage(this.rep, false); // false = message reçu des autres
                         try {
                             this.rep = (String) this.ois.readObject();
                         } catch (ClassNotFoundException | IOException e) {
@@ -113,7 +105,7 @@ public class ClientMajuscule implements Serializable{
         } catch (Exception e) {
             System.err.println("Erreur envoie du message : "+ e);
         }
-        
+        sc.close();
     }
 
     public void close_s() throws IOException{
@@ -126,10 +118,7 @@ public class ClientMajuscule implements Serializable{
         
     }
 
-    public void linkServer() throws ClassNotFoundException{
-        this.lecture();
-        //this.envoi();
-    }
+   
 
     public static void main(String args[])throws UnknownHostException, IOException, ClassNotFoundException, SQLException {
         //Socket s = new Socket("localhost",10000);
@@ -137,7 +126,7 @@ public class ClientMajuscule implements Serializable{
         Scanner sc = new Scanner(System.in);
         String nom = sc.nextLine();
         ClientMajuscule clt = new ClientMajuscule(nom);
-        clt.linkServer();
+        clt.lecture();
         
 }
 }

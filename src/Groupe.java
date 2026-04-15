@@ -2,32 +2,26 @@ import base_donnee.Connexion;
 import java.util.ArrayList;
 
 public class Groupe extends Connexion{
-    private int id;
     private String nom;
     private int nombre;
-    ArrayList<ClientMajuscule> list;
+    ArrayList<String> list;
 
 
-    public Groupe(int id, String nom, int nombre){
-        this.list = new ArrayList<ClientMajuscule>();
-        this.id = id;
+    public Groupe(String nom, int nombre){
         this.nom = nom;
         this.nombre = nombre;
+        this.list = new ArrayList<>(this.nombre);
     }
 
-    public void addUser(ClientMajuscule clt){
-        this.list.add(clt);
+    public void addUser(String nomC){
+        this.list.add(nomC);
     }
 
     public void deleteUser(String nom){
-        for (ClientMajuscule clt : this.list) {
-            if(clt.getNom().equals(nom))
+        for (String clt : this.list) {
+            if(clt.equals(nom))
                 this.list.remove(clt);
         }
-    }
-
-    public int getId() {
-        return this.id;
     }
 
     public String getNom() {

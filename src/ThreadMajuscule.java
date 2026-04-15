@@ -91,7 +91,6 @@ public class ThreadMajuscule extends Thread implements Serializable{
 	
 	public void sendMessage(String msg) {
 		try {
-
             oos.writeObject(msg);
             oos.flush();
 			oos.reset();
@@ -102,7 +101,6 @@ public class ThreadMajuscule extends Thread implements Serializable{
 		public void broadcastPrivate(String msg, String nom){
 		for(ThreadMajuscule th : this.serv){
 			if(th.getName().equals(nom)){ // thread name = client
-				//System.out.println("thread :" + th.getName() + "/" + th.getId() + " envoie un message...");
 				th.sendMessage(msg);
 				return;
 			}

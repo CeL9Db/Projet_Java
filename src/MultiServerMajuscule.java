@@ -11,7 +11,6 @@ import java.util.ArrayList;
 public class MultiServerMajuscule implements Serializable{
 	private ServerSocket server = null;
 	private Socket socket = null;
-	private String msg;
 	// Les groupes disponibles
 	ArrayList<ThreadMajuscule> clients = new ArrayList<>();
 
@@ -23,18 +22,16 @@ public class MultiServerMajuscule implements Serializable{
 	public MultiServerMajuscule(int num)throws IOException{
 		try {
 			this.server = new ServerSocket(num);
-			co = new Connexion();
-			
+			co = new Connexion(); //on établit la connexion avec la base de données
 		} catch (IOException e) {
 			System.err.println("Server: " + e);
 			System.exit(1);
 		}
 		System.out.println("Serveur: a l'ecoute sur le port " + server.getLocalPort());
-		//this.ecoute();
 		
 	}
 
-
+// methode qui établit la connexion avec le client
 	public void ecoute()throws IOException, SQLException {
 		while (true) { 
 			this.socket = server.accept();
@@ -51,8 +48,8 @@ public class MultiServerMajuscule implements Serializable{
 		this.clients.remove(e);
 	}
 
-	public Groupe createGroupe(int num, String nom, int nb){
-		Groupe groupe = new Groupe(num, nom, nb);
+	public Groupe createGroupe(String nom, int nb){
+		Groupe groupe = new Groupe(nom, nb);
 		return groupe;
 	} 
 
